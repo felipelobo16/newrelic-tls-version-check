@@ -1,0 +1,14 @@
+integrations:
+  - name: nri-flex
+    interval: 15s
+    config:
+      name: curl_test
+      apis:
+        - name: curl_test
+          event_type: gil_test
+          commands:
+            - run: SITES_ARRAY="ageri.com.br,youtube.com,google.com,newrelic.com,grafana.com" && Field_Separator=$IFS && IFS=, && for i in $SITES_ARRAY; do if [ "$(curl -v -s https://$i -o /dev/null/ 2>&1 | grep "SSL connection using" | awk '{print $5}')" = "TLSv1.3" ]; then echo $i:TRUE; else echo $i:FALSE; fi; done
+              split: horizontal
+              set_header: [Site, Working] 
+              regex_match: true 
+              split_by: (.*):(.*) 
